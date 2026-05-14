@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory Dashboard</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        padding: 40px;
+      }
+
+      h1 {
+        margin-bottom: 30px;
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        margin-bottom: 15px;
+      }
+
+      button {
+        padding: 10px 16px;
+        border: none;
+        background: #222;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      pre {
+        background: #eee;
+        padding: 10px;
+        border-radius: 8px;
+        overflow: auto;
+        margin-top: 10px;
+        max-height: 300px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Inventory Dashboard</h1>
+
+    <div class="container">
+      <div class="card">
+        <h2>Upload Sales</h2>
+
+        <form id="salesForm">
+          <input type="file" id="salesFile" />
+          <button type="submit">Upload Sales</button>
+        </form>
+
+        <pre id="salesResult"></pre>
+      </div>
+
+      <div class="card">
+        <h2>Upload Purchases</h2>
+
+        <form id="purchaseForm">
+          <input type="file" id="purchaseFile" />
+
+          <button type="submit">Upload Purchases</button>
+        </form>
+
+        <pre id="purchaseResult"></pre>
+      </div>
+
+      <div class="card">
+        <h2>Top Items</h2>
+
+        <button onclick="getTopItems()">Load Top Items</button>
+
+        <pre id="topItemsResult"></pre>
+      </div>
+
+      <div class="card">
+        <h2>Search Item</h2>
+
+        <input type="text" id="searchInput" placeholder="Search item" />
+
+        <button onclick="searchItems()">Search</button>
+
+        <pre id="searchResult"></pre>
+      </div>
+
+      <div class="card">
+        <h2>Profit Report</h2>
+
+        <button onclick="getProfitReport()">Load Profit Report</button>
+
+        <pre id="profitResult"></pre>
+      </div>
+
+      <div class="card">
+        <h2>Deadstock</h2>
+
+        <button onclick="getDeadstock()">Load Deadstock</button>
+
+        <pre id="deadstockResult"></pre>
+      </div>
+    </div>
+
+    <script>
+      // Upload Sales
+      document
+        .getElementById("salesForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          let file = document.getElementById("salesFile").files[0];
+
+          let formData = new FormData();
+
+          formData.append("file", file);
+
+          let response = await fetch("/api/upload-page/", {
+            method: "POST",
+            body: formData,
+          });
+
+          let data = await response.json();
+
+          document.getElementById("salesResult").textContent = JSON.stringify(
+            data,
+            null,
+            2,
+          );
+        });
+
+      // Upload Purchases
+      document
+        .getElementById("purchaseForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          let file = document.getElementById("purchaseFile").files[0];
+
+          let formData = new FormData();
+
+          formData.append("file", file);
+
+          let response = await fetch("/api/upload-purchases/", {
+            method: "POST",
+            body: formData,
+          });
+
+          let data = await response.json();
+
+          document.getElementById("purchaseResult").textContent =
+            JSON.stringify(data, null, 2);
+        });
+
+      // Top Items
+      async function getTopItems() {
+        let response = await fetch("/api/top-items/");
+
+        let data = await response.json();
+
+        document.getElementById("topItemsResult").textContent = JSON.stringify(
+          data,
+          null,
+          2,
+        );
+      }
+
+      // Search
+      async function searchItems() {
+        let query = document.getElementById("searchInput").value;
+
+        let response = await fetch(`/api/search/?q=${query}`);
+
+        let data = await response.json();
+
+        document.getElementById("searchResult").textContent = JSON.stringify(
+          data,
+          null,
+          2,
+        );
+      }
+
+      // Profit Report
+      async function getProfitReport() {
+        let response = await fetch("/api/profit-report/");
+
+        let data = await response.json();
+
+        document.getElementById("profitResult").textContent = JSON.stringify(
+          data,
+          null,
+          2,
+        );
+      }
+
+      // Deadstock
+      async function getDeadstock() {
+        let response = await fetch("/api/deadstock/");
+
+        let data = await response.json();
+
+        document.getElementById("deadstockResult").textContent = JSON.stringify(
+          data,
+          null,
+          2,
+        );
+      }
+    </script>
+  </body>
+</html>
