@@ -133,3 +133,7 @@ CACHES = {
         'LOCATION': 'unique-snowflake',
     }
 }
+
+DEBUG = False
+
+ALLOWED_HOSTS = ["*"]
